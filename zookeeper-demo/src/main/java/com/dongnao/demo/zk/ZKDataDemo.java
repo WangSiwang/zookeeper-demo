@@ -19,7 +19,7 @@ public class ZKDataDemo implements Watcher {
 	private static Stat stat = new Stat();
 
 	public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
-		zk = new ZooKeeper("192.168.56.101:2181", 5000, new ZKDataDemo());
+		zk = new ZooKeeper("172.20.32.80:2181", 5000, new ZKDataDemo());
 		cdl.await();
 
 		zk.create("/zk-test", "123".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL);

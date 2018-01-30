@@ -6,7 +6,7 @@ import org.I0Itec.zkclient.ZkClient;
 public class GetDataDemo {
 	public static void main(String[] args) throws InterruptedException {
 		String path = "/zk-client";
-		ZkClient client = new ZkClient("192.168.56.101:2181", 5000);
+		ZkClient client = new ZkClient("172.20.32.80:2181", 5000);
 		client.createEphemeral(path, "123");
 
 		client.subscribeDataChanges(path, new IZkDataListener() {

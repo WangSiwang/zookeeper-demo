@@ -12,7 +12,7 @@ public class ZKDemo implements Watcher {
 	private static final CountDownLatch cdl = new CountDownLatch(1);
 
 	public static void main(String[] args) throws IOException {
-		ZooKeeper zk = new ZooKeeper("192.168.56.101:2181", 5000, new ZKDemo());
+		ZooKeeper zk = new ZooKeeper("172.20.32.80:2181", 5000, new ZKDemo());
 		System.out.println(zk.getState());
 
 		try {

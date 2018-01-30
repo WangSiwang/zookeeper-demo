@@ -12,13 +12,13 @@ public class ZKSessionDemo implements Watcher {
 	private static final CountDownLatch cdl = new CountDownLatch(1);
 
 	public static void main(String[] args) throws IOException, InterruptedException {
-		ZooKeeper zk = new ZooKeeper("192.168.56.101:2181", 5000, new ZKSessionDemo());
+		ZooKeeper zk = new ZooKeeper("172.20.32.80:2181", 5000, new ZKSessionDemo());
 		cdl.await();
 		long sessionId = zk.getSessionId();
 		byte[] passwd = zk.getSessionPasswd();
 
-		zk = new ZooKeeper("192.168.56.101:2181", 5000, new ZKSessionDemo(), 1l, "test".getBytes());
-		zk = new ZooKeeper("192.168.56.101:2181", 5000, new ZKSessionDemo(), sessionId, passwd);
+		zk = new ZooKeeper("172.20.32.80:2181", 5000, new ZKSessionDemo(), 1l, "test".getBytes());
+		zk = new ZooKeeper("172.20.32.80:2181", 5000, new ZKSessionDemo(), sessionId, passwd);
 		Thread.sleep(Integer.MAX_VALUE);
 	}
 

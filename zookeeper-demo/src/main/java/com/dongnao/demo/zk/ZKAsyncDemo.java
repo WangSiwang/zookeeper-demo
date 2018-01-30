@@ -23,7 +23,7 @@ public class ZKAsyncDemo implements Watcher {
 	private static final CountDownLatch cdl = new CountDownLatch(1);
 
 	public static void main(String[] args) throws IOException, InterruptedException, KeeperException {
-		ZooKeeper zk = new ZooKeeper("192.168.56.101:2181", 5000, new ZKAsyncDemo());
+		ZooKeeper zk = new ZooKeeper("172.20.32.80:2181", 5000, new ZKAsyncDemo());
 		cdl.await();
 
 		zk.create("/zk-test-", "123".getBytes(), Ids.OPEN_ACL_UNSAFE, CreateMode.EPHEMERAL, new IStringCallback(),
