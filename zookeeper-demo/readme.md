@@ -1,3 +1,5 @@
+前面应该还是有有关zk的master选举相关的内容，等有空再补一下
+<hr>
 <B>Zk中的专业术语</B><br/>
 <pre>
 epoch周期值
@@ -13,6 +15,7 @@ history：当前节点接受到事务提议的log
 <li>优点3：避免不存在异常</li>
 </ol>
 <h2>ZkClient注册事件：</h2>
+原文demo在com.dongnao.demo.client下
 <pre>
 subscribeChildChanges/unsubscribeChildChanges(节点变化)
 subscribeDataChanges/unsubscribeDataChanges（数据变化）
@@ -20,6 +23,7 @@ subscribeDataChanges/unsubscribeDataChanges（数据变化）
 
 
 <h1>Curator</h1>
+原文demo在com.dongnao.demo.curator下
 <h2>curator连接ZK应用最广泛的工具。</h2>
 <ol>
 <li>zk应用场景（分布式锁，Master选举等等），curator包含了这些场景。</li>
@@ -43,6 +47,34 @@ NodeCache：节点处理监听（会使用缓存）。回调接口NodeCacheListe
 PathChildrenCache：子节点缓存，处理子节点变化。回调接口PathChildrenCacheListener
 TreeCache：NodeCache和PathChildrenCache的结合体。回调接口TreeCacheCacheListener
 </pre>
+
+<h1>Zookeeper实现分布式锁</h1>
+<image src="/resource/1123.png"></image>
+上面是一个image的标签  不知道为什么没有显示出来  望指教<br/>
+<hr>
+Election选举类<br/>
+<pre>
+QuorumCnxManager：主要完成服务器间的网络交互<br/>
+Vote 选票<br/>****
+QuorumPeer 是zk服务器实例类<br/>
+QuorumPeer.QuorumServer 存储zk server连接信息<br/></pre>
+<hr>
+<b>主要实现函数：</b><br/>
+lookForLeader：选举过程（主要函数）<br/>
+totalOrderPredicate：比较选票<br/>
+termPredicate：是否结束选举<br/>
+
+senderWorkerMap：主要用于发送<br/>
+queueSendMap：发送队列<br/>
+SendWorker：发送器<br/>
+RecvWorker：接收器<br/>
+lastMessageSent：最后一条发送消息<br/>
+Notification：表示该服务器节点收到选票信息<br/>
+recvset：存储本节点来自其他节点的选票(投票用)<br/>
+outofelection：存储本节点从其他节点由following、leading状态发送来的选票（选举确认用）<br/>
+<hr>
+
+
 
 
 
