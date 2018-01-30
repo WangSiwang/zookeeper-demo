@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.5"
+	xmlns="http://java.sun.com/xml/ns/javaee" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+
+	<!-- <listener>
+		<listener-class>com.dongnao.demo.election.ElectionContextListener</listener-class>
+	</listener> -->
+
+	<context-param>
+		<param-name>ZK_SERVERS</param-name>
+		<param-value>192.168.1.129:2181</param-value>
+	</context-param>
+	<context-param>
+		<param-name>ZK_PATH</param-name>
+		<param-value>/Tomcat/ActiveLock</param-value>
+	</context-param>
+	<context-param>
+		<param-name>ZK_TIMEOUT</param-name>
+		<param-value>3000</param-value>
+	</context-param>
+	<context-param>
+		<param-name>BACKOFF_TIME</param-name>
+		<param-value>1000</param-value>
+	</context-param>
+	<context-param>
+		<param-name>MAX_RETRIES</param-name>
+		<param-value>3</param-value>
+	</context-param>
+</web-app>

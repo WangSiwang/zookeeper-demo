@@ -8,7 +8,7 @@ currentEpoch（比喻：当前的年号）：当前的年号
 lastZxid：history中最近接收到的提议zxid(最大的值)
 history：当前节点接受到事务提议的log
 </pre>
-<h1>ZkClient	</h1>
+<h1>4.ZkClient	</h1>
 <ol>
 <li>优点1：递归创建</li>
 <li>优点2：递归删除</li>
@@ -48,7 +48,21 @@ PathChildrenCache：子节点缓存，处理子节点变化。回调接口PathCh
 TreeCache：NodeCache和PathChildrenCache的结合体。回调接口TreeCacheCacheListener
 </pre>
 
-<h1>Zookeeper实现分布式锁</h1>
+<h1>5.Zookeeper实现分布式锁</h1>
+缺点：“惊群效应”<br>
+<pre>有些分布式系统master-slave，master是一个单节点（备份master-back）。
+     实际的案例：Hadoop（NameNode、ResourceManager），普通的部署NameNode、ResourceManager仅仅是单节点。Hadoop HA（NameNode和ResourceManager有多个备份）
+     说明：统一的一个临时节点：ActiveOrStandByLock（/distibuted_system/ActiveOrStandByLock仅仅这样一个节点）
+     第一步：zk有这样一个持久节点/distibuted_system
+     第二步：master1和master2同时启动，同时向向/distributed_system这个节点申请创建临时子节点ActiveOrStandByLock（同一时间只有一个请求能够创建成功）。
+         如果master1创建成功，这个节点（ActiveOrStandByLock）就不允许master2创建（锁的机制）
+         master1：active===》真正的master。路径：/distributed_system/ActiveOrStandByLock
+         master2：改为standby（master-back）。
+         同时对/distributed_system/ActiveOrStandByLock注册事件监听。
+     第三步：master1挂掉或者超过一定时间。节点会被删除（事件机制就会起作用），就会通知master2，master2就会在/distributed_system/ActiveOrStandByLock，同时修改状态为active。
+     备注：假如master1并没有挂掉，只有由于网络延时导致，当网络顺畅的时候就会出现“脑裂”状态。都认为自己是active。
+     解决脑裂的办法：对/distributed_system/ActiveOrStandByLock加一个权限ACL控制。master1对于这个节点/distributed_system/ActiveOrStandByLock没有权限。自己把状态改成standby。
+</pre>
 <image src="/resource/1123.png"></image>
 上面是一个image的标签  不知道为什么没有显示出来  望指教<br/>
 <hr>
