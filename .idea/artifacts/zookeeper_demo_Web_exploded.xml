@@ -1,0 +1,16 @@
+<component name="ArtifactManager">
+  <artifact type="exploded-war" build-on-make="true" name="zookeeper-demo:Web exploded">
+    <output-path>$PROJECT_DIR$/out/artifacts/zookeeper_demo_Web_exploded</output-path>
+    <properties id="ant-preprocessing">
+      <options enabled="true" />
+    </properties>
+    <root id="root">
+      <element id="javaee-facet-resources" facet="zookeeper-demo/web/Web" />
+      <element id="directory" name="WEB-INF">
+        <element id="directory" name="classes">
+          <element id="module-output" name="zookeeper-demo" />
+        </element>
+      </element>
+    </root>
+  </artifact>
+</component>

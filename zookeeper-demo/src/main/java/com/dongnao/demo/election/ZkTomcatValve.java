@@ -24,7 +24,7 @@ public class ZkTomcatValve extends ValveBase {
 
 	@Override
 	public void invoke(Request request, Response response) throws IOException, ServletException {
-		client = CuratorFrameworkFactory.builder().connectString("192.168.56.101:2181").connectionTimeoutMs(1000)
+		client = CuratorFrameworkFactory.builder().connectString("172.20.32.80:2181").connectionTimeoutMs(1000)
 				.retryPolicy(new ExponentialBackoffRetry(1000, 3)).build();
 		client.start();
 

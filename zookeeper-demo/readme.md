@@ -50,6 +50,9 @@ TreeCache：NodeCache和PathChildrenCache的结合体。回调接口TreeCacheCac
 
 <h1>5.Zookeeper实现分布式锁</h1>
 缺点：“惊群效应”<br>
+<hr>
+
+<hr>
 <pre>有些分布式系统master-slave，master是一个单节点（备份master-back）。
      实际的案例：Hadoop（NameNode、ResourceManager），普通的部署NameNode、ResourceManager仅仅是单节点。Hadoop HA（NameNode和ResourceManager有多个备份）
      说明：统一的一个临时节点：ActiveOrStandByLock（/distibuted_system/ActiveOrStandByLock仅仅这样一个节点）

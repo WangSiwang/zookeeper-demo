@@ -16,7 +16,7 @@ import org.slf4j.LoggerFactory;
 public class ImproveLock implements Lock {
 	private static Logger logger = LoggerFactory.getLogger(ImproveLock.class);
 
-	private static final String ZOOKEEPER_IP_PORT = "192.168.1.129:2181";
+	private static final String ZOOKEEPER_IP_PORT = "172.20.32.80:2181";
 	private static final String LOCK_PATH = "/LOCK";
 
 	private ZkClient client = new ZkClient(ZOOKEEPER_IP_PORT, 1000, 1000, new SerializableSerializer());

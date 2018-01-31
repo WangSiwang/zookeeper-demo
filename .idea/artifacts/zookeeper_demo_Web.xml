@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="war" build-on-make="true" name="zookeeper-demo:Web">
+    <output-path>$PROJECT_DIR$/out/artifacts/zookeeper_demo_Web</output-path>
+    <root id="archive" name="zookeeper-demo_Web.war">
+      <element id="artifact" artifact-name="zookeeper-demo:Web exploded" />
+    </root>
+  </artifact>
+</component>
