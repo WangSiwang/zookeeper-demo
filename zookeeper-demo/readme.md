@@ -49,6 +49,7 @@ TreeCache：NodeCache和PathChildrenCache的结合体。回调接口TreeCacheCac
 </pre>
 
 <h1>5.Zookeeper实现分布式锁</h1>
+2018年1月31日 
 缺点：“惊群效应”<br>
 <hr>
 2018年1月31日更新
@@ -158,6 +159,85 @@ Notification：表示该服务器节点收到选票信息<br/>
 recvset：存储本节点来自其他节点的选票(投票用)<br/>
 outofelection：存储本节点从其他节点由following、leading状态发送来的选票（选举确认用）<br/>
 <hr>
+<h2>Zookeeper Master选举</h2>
+2018年1月31日 
+<ol><li>
+用Tomcat模拟一个实现Master选举过程(应用tomcat 阀com.dongnao.demo.election.ZkTomcatValve)</li><li>
+使用acl处理脑裂的代码</li></ol>
+<h1>Zookeeper基本模型</h1>
+<ol><li>
+持久节点（除非主动删除，zk不会做清理工作）</li><li>
+临时节点（随着session会话消亡，而消亡）</li><li>
+持久顺序节点</li><li>
+临时顺序节点</li></ol>
+<h2>数据模型——节点</h2>
+树模型（采用文件系统的形式，只不过去掉文件和目录），叫数据节点。
+<h2>ACL——权限控制</h2>
+org.apache.zookeeper.ZooDefs.Ids
+<hr>
+对于一个节点可操作的权限有5种：
+<pre>
+READ（只读）
+WRITE（只写）
+CREATE（创建）
+DELETE（删除）
+ADMIN（节点管理权限）(对节点的删除和创建的权限)
+</pre>
+ACL机制：权限模式（Schema）、授权对象（ID）、权限（Permission）
+<ol><li>
+1.	world：开放模式。意思所有人都可以访问。</li><li>
+2.	IP：   针对某个开放权限</li><li>
+3.	digest：用户/密码模式</li><li>
+4.	Super：超级用户模式</li></ol>
+<pre>
+
+</pre>
+使用密文：<pre>
+setAcl path digest|ip:username:password:c|d|r|w|a</pre>
+密文生成org.apache.zookeeper.server.auth.DigestAuthenticationProvider
+
+使用明文：<pre>
+   addauth digest username:password
+   setAcl /path auth:username:password:cdrwa</pre>
+删除节点的bug
+<pre>rmr / delete</pre>
+
+密文命令（执行目录在zk根目录）：<pre>
+java -cp ./zookeeper-3.4.6.jar:./lib/log4j-1.2.16.jar:./lib/slf4j-api-1.6.1.jar:./lib/slf4j-log4j12-1.6.1.jar org.apache.zookeeper.server.auth.DigestAuthenticationProvider user1:12345
+</pre>
+<h2>版本</h2>
+
+cversion 当前节点的权限<br>
+dataversion 当前节点数据内容的版本号<br>
+aclVersion  就是ACL版本号<br>
+zookeeper版本的含义：版本指的是变更的次数。<br>
+CAS（compare and swap）比较然后交换。<br>
+<h2>Watcher</h2>
+org.apache.zookeeper.ZooKeeper
+org.apache.zookeeper.Watcher
+org.apache.zookeeper.server.DataTree
+<image src="/zookeeper-demo/src/resource/Watcher.png"></image>
+
+<h3>客户端：</h3>
+<pre>
+Zookeeper （getChild）
+Cliencnxn
+WatchRegistration
+SendThread
+Packet(creatBB经过处理，简单化)
+ZKWatchManager
+</pre><pre>
+<h3>服务端：</h3>
+FinalRequestProcessor
+WatchManager（triggerWatcher）
+SendThread.readResponse
+EventThread</pre>
+
+
+
+
+
+
 
 
 
