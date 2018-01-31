@@ -51,7 +51,17 @@ TreeCache：NodeCache和PathChildrenCache的结合体。回调接口TreeCacheCac
 <h1>5.Zookeeper实现分布式锁</h1>
 缺点：“惊群效应”<br>
 <hr>
-
+2018年1月31日更新
+关于订单类com.dongnao.demo.lock.OrderServiceImpl
+中的分布式锁com.dongnao.demo.lock.ImproveLock的相关解释
+<pre><ol>
+<li>在OrderServiceImpl的业务场景中申明了CountDownLatch线程计数器，以及模拟了100个线程并发的情况</li>
+<li>在分布式锁ImproveLock中
+<ol><li>tryLock(),如果currentPath为空则为第一次尝试加锁，第一次加锁赋值currentPath：<br/>如果currentPath等于当前建立的第一个临时顺序节点：0000000400，返回true加锁成功<br/>如果当前节点在所有节点中排名中不是排名第一，则获取前面的节点名称，并赋值给beforePath,返回Lock()中等待waitForLock(),<br/></li>
+<li>在waitForLock(),设置beforePath监听器监听subscribeDataChanges===>IZkDataListener可以解决惊群效应</li>
+</ol>
+</li>
+</ol></pre>
 <hr>
 <pre>有些分布式系统master-slave，master是一个单节点（备份master-back）。
      实际的案例：Hadoop（NameNode、ResourceManager），普通的部署NameNode、ResourceManager仅仅是单节点。Hadoop HA（NameNode和ResourceManager有多个备份）
@@ -69,9 +79,67 @@ TreeCache：NodeCache和PathChildrenCache的结合体。回调接口TreeCacheCac
 <image src="/resource/1123.png"></image>
 上面是一个image的标签  不知道为什么没有显示出来  望指教<br/>
 <hr>
-Election选举类<br/>
+Election的实现FastLeaderElection选举类源码分析<br/>
 <pre>
 QuorumCnxManager：主要完成服务器间的网络交互<br/>
+	senderWorkerMap 主要用于发送
+    queueSendMap主要用于发送
+    	SendWorker用于发送器,底层连接的<sid,socket>
+    	RecvWorker用于接收器
+	lastMessageSent最后一条发送的消息
+	QuorumPeer 半数对等协议,在初始化的过程中出现,饱含选举IP地址 选举port等状态
+Notification:表示服务器节点收到的选票信息
+	version:
+	leader:Proposed leader
+	zxid:zxid of the proposed leader
+	electionEpoch:Epoch
+	QuorumPeer.ServerState:LOOKING, FOLLOWING, LEADING(广播状态), OBSERVING;
+	sid:Address of sender
+	peerEpoch:epoch of the proposed leader
+lookForLeader():
+	recvset：存储本节点来自其他节点的选票(投票用)<br/>
+	outofelection：存储本节点从其他节点由following、leading状态发送来的选票（选举确认用）<br/>
+	updateProposal(参与者的选票,最后的logger的zxid,返回当前的年号):更新选票,第一次投票给自己
+	sendNotifications();放置发送队列中
+	循环...(选举没有stop)
+	recvqueue.poll():获取到一张消息
+		进行检查:
+			网断
+			发送队列为0
+				重连所有的socket连接
+				tmpTimeOut退避策略*2
+	self.getVotingView().containsKey(n.sid):是否包含当前的sid:
+		 LOG.warn(发送自不在本集群的消息)
+		 Notification消息的状态:
+		 	LOOKING:
+		 		n.electionEpoch > logicalclock:
+		 			logicalclock = n.electionEpoch;
+                    recvset.clear();
+                    totalOrderPredicate():投票对比:周期Epoch大||Zxid大||myid:
+                    updateProposal()跟新选票成为本地的选票
+                    sendNotifications()发送队列
+                n.electionEpoch < logicalclock:
+                	ignore 
+            	n.electionEpoch = logicalclock:
+            		对比totalOrderPredicate()
+            		pdateProposal();
+            		sendNotifications();
+				recvset.put():将选票放置进收件箱
+				termPredicate():是否要结束选举
+					vote.equals(votes):遍历选票
+					containsQuorum(set):过半监测
+						校验/返回endVote选票
+			FOLLOWING:
+            LEADING:
+            	前头的半数检测协议
+            	checkLeader():
+        			leader的状态
+            		比较周期
+				构造新选票并且返回		
+
+
+</pre>
+</hr>
 Vote 选票<br/>****
 QuorumPeer 是zk服务器实例类<br/>
 QuorumPeer.QuorumServer 存储zk server连接信息<br/></pre>
