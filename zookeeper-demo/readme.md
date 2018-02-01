@@ -77,7 +77,8 @@ TreeCache：NodeCache和PathChildrenCache的结合体。回调接口TreeCacheCac
      备注：假如master1并没有挂掉，只有由于网络延时导致，当网络顺畅的时候就会出现“脑裂”状态。都认为自己是active。
      解决脑裂的办法：对/distributed_system/ActiveOrStandByLock加一个权限ACL控制。master1对于这个节点/distributed_system/ActiveOrStandByLock没有权限。自己把状态改成standby。
 </pre>
-<image src="/resource/1123.png"></image>
+<image src="/zookeeper-demo/src/resource/1123.png"></image>
+<image src="/zookeeper-demo/src/resource/Watcher.png"></image>
 上面是一个image的标签  不知道为什么没有显示出来  望指教<br/>
 <hr>
 Election的实现FastLeaderElection选举类源码分析<br/>
