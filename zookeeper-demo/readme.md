@@ -78,8 +78,6 @@ TreeCache：NodeCache和PathChildrenCache的结合体。回调接口TreeCacheCac
      解决脑裂的办法：对/distributed_system/ActiveOrStandByLock加一个权限ACL控制。master1对于这个节点/distributed_system/ActiveOrStandByLock没有权限。自己把状态改成standby。
 </pre>
 <image src="/zookeeper-demo/src/resource/1123.png"></image>
-<image src="/zookeeper-demo/src/resource/Watcher.png"></image>
-上面是一个image的标签  不知道为什么没有显示出来  望指教<br/>
 <hr>
 Election的实现FastLeaderElection选举类源码分析<br/>
 <pre>
@@ -227,12 +225,56 @@ WatchRegistration
 SendThread
 Packet(creatBB经过处理，简单化)
 ZKWatchManager
-</pre><pre>
+</pre>
 <h3>服务端：</h3>
+<pre>
 FinalRequestProcessor
 WatchManager（triggerWatcher）
 SendThread.readResponse
 EventThread</pre>
+<hr/>
+2018年2月1日  内容:zookeeper的事件监听的机制源码分析<br/>
+ps:也是似懂非懂蒙蔽中
+Zookeeper Class中的构造方法中我们可以看到
+<image src="/zookeeper-demo/src/resource/Zookeeper构造方法.png"></image>
+会传入一个Watch的一个事件监听体系<br/>
+<image src="/zookeeper-demo/src/resource/Zookeeper.getData.png"></image>
+接下来,进入到submitRequest()中,
+<image src="/zookeeper-demo/src/resource/ClientCnxn.submitRequest.png"></image>
+话分两头单表一支</br>
+封装的packet会进行线程中发送
+<image src="/zookeeper-demo/src/resource/ClientCnxn.sendPacket.png"></image>
+在这个SendThread是完全的继承自java的Thread线程<br/>
+<image src="/zookeeper-demo/src/resource/SendThread hierarchy.png"></image>
+在这个方法中是将前面的Packet封装的具体实现,并且是在同步块中会将<b>outgoingqueue</b>进行输出
+<image src="/zookeeper-demo/src/resource/ClientCnxn.queuePacket.png"></image>
+其中底层的实现还是NIO通信
+<image src="/zookeeper-demo/src/resource/ClientCnxnSocketNIO.png"></image>
+但是还是由于并发的信息量过大的缘故,所以还需要进行再次反序列化以及进行封装
+<image src="/zookeeper-demo/src/resource/ClientCnxnSocketNIO.snedPacket.png"></image>
+createBB的具体的实现
+<image src="/zookeeper-demo/src/resource/ClientCnxn.Packet.createBB.png"></image>
+<hr/>
+到了finnish阶段,会存储到ClientWatchManager中的三个map中
+<image src="/zookeeper-demo/src/resource/ClientCnxn.finishPacket.png"></image>
+<image src="/zookeeper-demo/src/resource/Zookeeper.WatcherRegister.register.png"></image>
+<image src="/zookeeper-demo/src/resource/Zookeeper.WatcherRegister.getwatcher.png"></image>
+<image src="/zookeeper-demo/src/resource/ZKWatchManager.getWatches.png"></image>
+在线程处理阶段会对操作数进行判断处理
+<image src="/zookeeper-demo/src/resource/FinalRequestProcess.process.png"></image>
+已getData操作进行验证,
+<image src="/zookeeper-demo/src/resource/getData操作数.png"></image>
+在完成事件中添加触发的机制
+<image src="/zookeeper-demo/src/resource/WatchManager.triggerWatch.png"></image>
+在sendThread中的readermeResponse中添加回调判断已经执行的操作数,并且在event中的EventThread中进行性处理
+<image src="/zookeeper-demo/src/resource/SendThread.readResponse.png"></image>
+添加时间监听机制在判断完操作数
+<image src="/zookeeper-demo/src/resource/SendThread.readResponse.getXid.png"></image>
+在EventThread中对事件进行处理
+<image src="/zookeeper-demo/src/resource/EventThread.png"></image>
+<hr/>
+终于完了,视频听了三遍还是迷迷糊糊的,欢迎各位dalao指教...嗯有空了把master选举的源码分析也作出来,快两点了..好饿..要去吃饭了...
+<hr/>
 
 
 
